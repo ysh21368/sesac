@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">    <!--style.css 파일 참조하기-->
+    <title>To Do List</title>
+    
+    <script type="text/javascript">
+        // <![CDATA[
+        var width=144; // radius of the eyes in pixels
+        var colour="#06c"; // colour of the eye - bluey green in this case
+        var iris="#111"; //   colour of the iris (normally black);
+        
+        /***************************\
+        *   Moving Eyeballs Effect  *
+        *(c)2012-20 mf2fm web-design*
+        *  http://www.mf2fm.com/rv  *
+        * DON'T EDIT BELOW THIS BOX *
+        \***************************/
+        var swide=800;
+        var shigh=600;
+        var sleft=sdown=0;
+        
+        var glasses, lefteyeball, righteyeball, lefteye, righteye;
+        
+        function addLoadEvent(funky) {
+          var oldonload=window.onload;
+          if (typeof(oldonload)!='function') window.onload=funky;
+          else window.onload=function() {
+            if (oldonload) oldonload();
+            funky();
+          }
+        }
+        
+        addLoadEvent(draw_eyes);
+        
+        function draw_eyes() {
+          var i, j, l, r;
+          glasses=document.createElement("div");
+          i=glasses.style;
+          i.position="fixed";
+          i.top="50%";
+          i.left="50%";
+          i.width="1px";
+          i.height="1px";
+          i.overflow="visible";
+          i.zIndex="100";
+          i.pointerEvents="none";
+          document.body.appendChild(glasses);
+          lefteyeball=document.createElement("div");
+          righteyeball=document.createElement("div");
+          i=lefteyeball.style;
+          j=righteyeball.style;
+          i.position=j.position="absolute";
+          i.width=j.width=(width*2)+"px";
+          i.height=j.height=(width*2)+"px";
+          i.top=j.top=(-width)+"px";
+          i.left=(-2.1*width)+"px";
+          j.left=(.1*width)+"px";
+          i.borderRadius=j.borderRadius="50%";
+          i.backgroundColor=j.backgroundColor=colour;
+          i.background=j.background="radial-gradient(circle at "+width+"px "+width+"px, #fff, "+colour+" 75%)";
+          i.opacity=j.opacity="0.5";
+          i.zIndex=j.zIndex="100";
+          glasses.appendChild(lefteyeball);
+          glasses.appendChild(righteyeball);
+          lefteye=document.createElement("div");
+          righteye=document.createElement("div");
+          i=lefteye.style;
+          j=righteye.style;
+          i.position=j.position="absolute";
+          i.width=j.width=width+"px";
+          i.height=j.height=width+"px";
+          i.top=j.top=(-width/2)+"px";
+          i.left=(-1.6*width)+"px";
+          j.left=(.6*width)+"px";
+          i.borderRadius=j.borderRadius="50%";
+          i.backgroundColor=j.backgroundColor=iris;
+          i.opacity=j.opacity="0.8";
+          i.zIndex=j.zIndex="101";
+          glasses.appendChild(lefteye);
+          glasses.appendChild(righteye);
+          set_width();
+          set_scroll();
+        }
+        
+        
+        document.onmousemove=mouse;
+        function mouse(e) {
+          var x, y, xdiff, ydiff, distn;
+        
+          y=(e)?e.pageY:event.y;
+          x=(e)?e.pageX:event.x;
+          x-=sleft;
+          y-=sdown;
+        
+          xdiff=x+(1.1*width)-(swide*0.5);
+          ydiff=y-shigh/2;
+          distn=Math.pow(xdiff*xdiff+ydiff*ydiff,0.5);
+          if (distn>width/2.5) {
+            xdiff=xdiff*width/distn/2.5;
+            ydiff=ydiff*width/distn/2.5;
+          }
+          lefteye.style.top=(ydiff-width/2)+"px";
+          lefteye.style.left=(xdiff-1.6*width)+"px";
+        
+          xdiff=x-(1.1*width)-(swide*0.5);
+          ydiff=y-shigh/2;
+          distn=Math.pow(xdiff*xdiff+ydiff*ydiff,0.5);
+          if (distn>width/2.5) {
+            xdiff=xdiff*width/distn/2.5;
+            ydiff=ydiff*width/distn/2.5;
+          }
+          righteye.style.top=(ydiff-width/2)+"px";
+          righteye.style.left=(xdiff+0.6*width)+"px";
+        }
+        
+        document.onscroll=set_scroll;
+        function set_scroll() {
+          if (typeof(self.pageYOffset)=="number") {
+            sdown=self.pageYOffset;
+            sleft=self.pageXOffset;
+          }
+          else if (document.body.scrollTop || document.body.scrollLeft) {
+            sdown=document.body.scrollTop;
+            sleft=document.body.scrollLeft;
+          }
+          else if (document.documentElement && (document.documentElement.scrollTop || document.documentElement.scrollLeft)) {
+            sleft=document.documentElement.scrollLeft;
+            sdown=document.documentElement.scrollTop;
+          }
+          else {
+            sdown=0;
+            sleft=0;
+          }
+        }
+        
+        window.onresize=set_width;
+        function set_width() {
+          var sw_min=999999;
+          var sh_min=999999;
+          if (document.documentElement && document.documentElement.clientWidth) {
+            if (document.documentElement.clientWidth>0) sw_min=document.documentElement.clientWidth;
+            if (document.documentElement.clientHeight>0) sh_min=document.documentElement.clientHeight;
+          }
+          if (typeof(self.innerWidth)!="undefined" && self.innerWidth) {
+            if (self.innerWidth>0 && self.innerWidth<sw_min) sw_min=self.innerWidth;
+            if (self.innerHeight>0 && self.innerHeight<sh_min) sh_min=self.innerHeight;
+          }
+          if (document.body.clientWidth) {
+            if (document.body.clientWidth>0 && document.body.clientWidth<sw_min) sw_min=document.body.clientWidth;
+            if (document.body.clientHeight>0 && document.body.clientHeight<sh_min) sh_min=document.body.clientHeight;
+          }
+          if (sw_min==999999 || sh_min==999999) {
+            sw_min=800;
+            sh_min=600;
+          }
+          swide=sw_min;
+          shigh=sh_min;
+        }
+        // ]]>
+        </script>
+    <script type="text/javascript">
+        
+        // <![CDATA[
+        var text=new Array("Brought to you by RV's FREE Scripts", "Your flight is now departing...", "BA 329 AMSTERDAM    Boarding  GATE 3", "BA 057 JOHANNESBURG Boarding  GATE 9");
+        //change the above array to include the text you want animated (any text on the page will be added to this)
+        var size=28; // how tall in pixels
+        var speed=125; // lower is faster
+        var link="http://www.mf2fm.com/rv/"; // where to link to if the text is clicked, set to ="" if you don't want the text to be a link
+        
+        /******************************\
+        *Airport Departure Board Script*
+        *  (c)2013 on mf2fm web-design *
+        *   http://www.mf2fm.com/rv    *
+        *  DO NOT EDIT BELOW THIS BOX  *
+        \******************************/
+        
+        function addLoadEvent(funky) {
+          var oldonload=window.onload;
+          if (typeof(oldonload)!='function') window.onload=funky;
+          else window.onload=function() {
+            if (oldonload) oldonload();
+            funky();
+          }
+        }
+        
+        addLoadEvent(boarding);
+        
+        var divvy, ditsy, crount;
+        var maxilength=0;
+        var taunty=0;
+        var stext=new Array();
+        function boarding() {
+          var i, j, w;
+          divvy=document.getElementById("board");
+          divvy.style.fontSize=(size-4)+"px";
+          divvy.style.position="relative";
+          if (divvy.firstChild.nodeValue) {
+            text.unshift(divvy.firstChild.nodeValue.toString());
+            divvy.firstChild.nodeValue=String.fromCharCode(160);
+          }
+          else divvy.appendChild(document.createTextNode(String.fromCharCode(160)));
+          stext['text']=new Array();
+          for (i=0; i<text.length; i++) if (text[i].length>maxilength) maxilength=text[i].length;
+          w=Math.floor((size-4)/1.414);
+          for (i=0; i<4; i++) {
+            stext[i]=new Array();
+            for (j=0; j<maxilength; j++) {
+              stext[i][j]=document.createElement('div');
+              stext[i][j].appendChild(document.createTextNode(String.fromCharCode(160)));
+              stext[i][j].style.position="absolute";
+              stext[i][j].style.top="0px";
+              stext[i][j].style.backgroundColor="transparent";
+              stext[i][j].style.textAlign="center";
+              stext[i][j].style.left=Math.floor(w*j)+"px";
+              stext[i][j].style.width=w+"px";
+              if (i<2) stext[i][j].style.clip="rect(0px, "+w+"px, "+Math.floor((size/2)-3)+"px, 0px)";
+              else stext[i][j].style.clip="rect("+Math.floor((size/2)-2)+"px, "+w+"px, "+size+"px, 0px)";
+              if (link) stext[i][j].onclick=function(){window.location.href=link};
+              divvy.appendChild(stext[i][j]);
+            }
+          }
+          take_off();
+        }
+        
+        function take_off() {
+          var j;
+          crount=0;
+          for (j=0; j<text[taunty].length; j++) stext['text'][j]=text[taunty].charCodeAt(j)-32;
+          for (; j<maxilength; j++) stext['text'][j]=0;
+          taunty=++taunty%text.length;
+          ditzy=setInterval(flicker, speed);
+        }
+        
+        function flicker() {
+          var j, geendetet;
+          geendetet=maxilength;
+          for (j=0; j<maxilength; j++) {
+            if (stext['text'][j] && stext['text'][j]>=crount-j && j-crount<32) swap_a_doodle (crount%2, j, String.fromCharCode(32+(crount-j)%95));
+            else if (stext['text'][j] && Math.random()<0.002 && stext['text'][j]<161 && crount<3*text.length) stext['text'][j]=stext['text'][j]+95;
+            else geendetet--;
+          }
+          if (!geendetet) {
+            clearInterval(ditzy);
+            setTimeout('ditzy=setInterval("landing()", speed*.7)', speed*50);
+          }
+          crount++;
+        }
+        
+        function landing() {
+          var j, geendetet;
+          geendetet=maxilength;
+          for (j=0; j<maxilength; j++) {
+            if (stext['text'][j]%95) swap_a_doodle (crount%2, j, String.fromCharCode(++stext['text'][j]%95+32));
+            else geendetet--;
+          }
+          if (!geendetet) {
+            clearInterval(ditzy);
+            take_off();
+          }
+          crount++;
+        }
+        
+        function swap_a_doodle(i, j, l) {
+          stext[i][j].firstChild.nodeValue=l;
+          stext[i][j].style.visibility="visible";
+          stext[i+2][j].firstChild.nodeValue=l;
+          setTimeout ('stext['+(i+2)+']['+j+'].style.visibility="visible"', speed*.2);
+          setTimeout ('stext['+(1-i)+']['+j+'].style.visibility="hidden"', speed*.3)
+          setTimeout ('stext['+(3-i)+']['+j+'].style.visibility="hidden"', speed*.5);
+        }
+        // ]]>
+        </script>
+        <script type="text/javascript">
+// <![CDATA[
+var sparks=75; // how many sparks per clicksplosion
+var speed=33; // how fast - smaller is faster
+var bangs=5; // how many can be launched simultaneously (note that using too many can slow the script down)
+var colours=new Array('#03f', '#f03', '#0e0', '#93f', '#0cf', '#f93', '#f0c'); 
+//                     blue    red     green   purple  cyan    orange  pink
+
+/****************************
+*   Clicksplosion Effect    *
+*(c)2012-3 mf2fm web-design *
+*  http://www.mf2fm.com/rv  *
+* DON'T EDIT BELOW THIS BOX *
+****************************/
+var intensity=new Array();
+var Xpos=new Array();
+var Ypos=new Array();
+var dX=new Array();
+var dY=new Array();
+var stars=new Array();
+var decay=new Array();
+var timers=new Array();
+var swide=800;
+var shigh=600;
+var sleft=sdown=0;
+var count=0;
+
+function addLoadEvent(funky) {
+  var oldonload=window.onload;
+  if (typeof(oldonload)!='function') window.onload=funky;
+  else window.onload=function() {
+    if (oldonload) oldonload();
+    funky();
+  }
+}
+
+addLoadEvent(clicksplode);
+
+function clicksplode() { if (document.getElementById) {
+  var i, j;
+  window.onscroll=set_scroll;
+  window.onresize=set_width;
+  document.onclick=eksplode;
+  set_width();
+  set_scroll();
+  for (i=0; i<bangs; i++) for (j=sparks*i; j<sparks+sparks*i; j++) {
+    stars[j]=createDiv('*', 13);
+    document.body.appendChild(stars[j]);
+  }
+}}
+
+function createDiv(char, size) {
+  var div, sty;
+  div=document.createElement('div');
+  sty=div.style;
+  sty.font=size+'px monospace';
+  sty.position='absolute';
+  sty.backgroundColor='transparent';
+  sty.visibility='hidden';
+  sty.zIndex='101';
+  div.appendChild(document.createTextNode(char));
+  return (div);
+}
+
+function bang(N) {
+  var i, Z, A=0;
+  for (i=sparks*N; i<sparks*(N+1); i++) { 
+    if (decay[i]) {
+      Z=stars[i].style;
+      Xpos[i]+=dX[i];
+      Ypos[i]+=(dY[i]+=1.25/intensity[N]);
+      if (Xpos[i]>=swide || Xpos[i]<0 || Ypos[i]>=shigh+sdown || Ypos[i]<0) decay[i]=1;
+	  else {
+        Z.left=Xpos[i]+'px';
+        Z.top=Ypos[i]+'px';
+	  }
+      if (decay[i]==15) Z.fontSize='7px';
+      else if (decay[i]==7) Z.fontSize='2px';
+      else if (decay[i]==1) Z.visibility='hidden';
+	  decay[i]--;
+	}
+	else A++;
+  }
+  if (A!=sparks) timers[N]=setTimeout('bang('+N+')', speed);
+}
+
+function eksplode(e) { 
+  var x, y, i, M, Z, N;
+  set_scroll();
+  y=(e)?e.pageY:event.y+sdown;
+  x=(e)?e.pageX:event.x+sleft;
+  N=++count%bangs;
+  M=Math.floor(Math.random()*3*colours.length);
+  intensity[N]=5+Math.random()*4;
+  for (i=N*sparks; i<(N+1)*sparks; i++) {
+    Xpos[i]=x;
+    Ypos[i]=y-5;
+    dY[i]=(Math.random()-0.5)*intensity[N];
+    dX[i]=(Math.random()-0.5)*(intensity[N]-Math.abs(dY[i]))*1.25;
+    decay[i]=16+Math.floor(Math.random()*16);
+    Z=stars[i].style;
+    if (M<colours.length) Z.color=colours[i%2?count%colours.length:M];
+    else if (M<2*colours.length) Z.color=colours[count%colours.length];
+    else Z.color=colours[i%colours.length];
+    Z.fontSize='13px';
+    Z.visibility='visible';
+  }
+  clearTimeout(timers[N]);
+  bang(N);
+} 
+
+function set_width() {
+  var sw_min=999999;
+  var sh_min=999999;
+  if (document.documentElement && document.documentElement.clientWidth) {
+    if (document.documentElement.clientWidth>0) sw_min=document.documentElement.clientWidth;
+    if (document.documentElement.clientHeight>0) sh_min=document.documentElement.clientHeight;
+  }
+  if (typeof(self.innerWidth)=='number' && self.innerWidth) {
+    if (self.innerWidth>0 && self.innerWidth<sw_min) sw_min=self.innerWidth;
+    if (self.innerHeight>0 && self.innerHeight<sh_min) sh_min=self.innerHeight;
+  }
+  if (document.body.clientWidth) {
+    if (document.body.clientWidth>0 && document.body.clientWidth<sw_min) sw_min=document.body.clientWidth;
+    if (document.body.clientHeight>0 && document.body.clientHeight<sh_min) sh_min=document.body.clientHeight;
+  }
+  if (sw_min==999999 || sh_min==999999) {
+    sw_min=800;
+    sh_min=600;
+  }
+  swide=sw_min-7;
+  shigh=sh_min-7;
+}
+
+function set_scroll() {
+  if (typeof(self.pageYOffset)=='number') {
+    sdown=self.pageYOffset;
+    sleft=self.pageXOffset;
+  }
+  else if (document.body && (document.body.scrollTop || document.body.scrollLeft)) {
+    sdown=document.body.scrollTop;
+    sleft=document.body.scrollLeft;
+  }
+  else if (document.documentElement && (document.documentElement.scrollTop || document.documentElement.scrollLeft)) {
+    sleft=document.documentElement.scrollLeft;
+    sdown=document.documentElement.scrollTop;
+  }
+  else {
+    sdown=0;
+    sleft=0;
+  }
+}
+// ]]>
+
+</script>
+</head >
+<body >
+    <div id="board">To Do List</div>
+
+    <h1 >
+
+   
+        
+    </h1>
+    <div class="container">
+        <input id="inputField" type="text">   <!--text 입력창(할일 입력창) 만들기-->
+        <button id="addToDo"> 추가 </button>     <!-- + 버튼 만들기 -->
+        <div class="to-"dos id="toDoList"> </div>  <!-- id = inputField에 할일이 입력되고 + 버튼이 눌리면 할일이 나타날 공간 만들기-->
+
+    </div>
+    <script src="Todulist.js"> </script>   <!--javascript 파일 참조하기-->
+</body>
+</html>
